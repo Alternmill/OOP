@@ -6,23 +6,13 @@
 #include <algorithm>
 #include"Tile_plain.h"
 #include<GLFW/glfw3.h>
+#include "InterfaceElement.h"
+#include "Color.h"
 
 
-struct Color {
-	float r = 1, g = 1, b = 1;
-	Color() {
-		r = 1; g = 1; b = 0;
-	}
-	Color(float red,float green, float blue) {
-		r = red;
-		g = green;
-		b = blue;
-	}
-};
-
-class ColorPicker
+class ColorPicker : public InterfaceElement
 {
-private:
+protected:
 	int prevx, prevy;
 	bool was_pressed;
 	bool left_was_pressed;
@@ -35,18 +25,19 @@ private:
 	Color curColor;
 	Shader* ColorShader;
 	std::vector<std::vector<Tile_plain>> world;
+	GLFWwindow* window;
 public:
-	ColorPicker(int screen_height, int screen_width,
+	ColorPicker(GLFWwindow* window,int screen_height, int screen_width,
 				float rel_pos_x, float rel_pos_y,
 				float rel_width, float rel_height,
 				int num_col, int num_row,
 				const char* vertexFile, const char* fragmentFile);
 
-	void Draw();
+	void Draw()override;
 	void setRainbow();
-	Color getColor(GLFWwindow *window);
-	void setWhite(Color col);
-
+	Color getColor();
+	bool isOn(int mousex, int mousey) override;
+	void update(int mousex, int mousey, Color& color) override;
 };
 
 #endif

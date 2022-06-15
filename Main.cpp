@@ -5,7 +5,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
-
+#include<boost/di.hpp>
 
 #include"Texture.h"
 #include"shaderClass.h"
@@ -16,7 +16,8 @@
 #include"Tile_plain.h"
 #include"Map.h"
 #include"ColorPicker.h"
-
+#include"WhiteColorPicker.h"
+#include"Manager.h"
 const unsigned int width = 2880, height = 1620;
 
 int main()
@@ -49,14 +50,15 @@ int main()
 	Shader gridShader("Grid.vert", "Grid.frag");
 	Shader tileShaderOn("default.vert", "default.frag");
 	
-	Map world(height,width,-1,-1,9.0/16.0,1,50,50,tileShaderOn, tileShaderOn);
 	Grid grid(51,-1,9.0/16.0*2-1,-1,1);
-	ColorPicker picker(height, width, 1.0/8.0, -1, 7.0 / 16.0, 6.0/9.0, 100, 100, "default.vert", "default.frag");
-	picker.setRainbow();
-	ColorPicker picker_white(height, width, 1.0/8.0, 1.0/3.0, 7.0 / 16.0, 1.0/9.0, 100, 1, "default.vert", "default.frag");
-
-	Color curColor(1, 1, 1),pColor(1,1,1);
 	
+	Manager* manager = Manager::GetInstance(
+		new Map(window, height, width, -1, -1, 9.0 / 16.0, 1, 50, 50, tileShaderOn, tileShaderOn),
+		new ColorPicker(window, height, width, 1.0 / 8.0, -1, 7.0 / 16.0, 6.0 / 9.0, 100, 100, "default.vert", "default.frag"),
+		new WhiteColorPicker(window, height, width, 1.0 / 8.0, 1.0 / 3.0, 7.0 / 16.0, 1.0 / 9.0, 100, 1, "default.vert", "default.frag"));
+	Color curColor(1, 1, 1),pColor(1,1,1);
+
+	double mousex, mousey;
 	while (!glfwWindowShouldClose(window))
 	{
 		
@@ -64,20 +66,15 @@ int main()
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		tileShaderOn.Activate();
-
-		world.Update(window, curColor.r, curColor.g, curColor.b);
-		world.Update(window, curColor.r, curColor.g, curColor.b);
-		world.Update(window, curColor.r, curColor.g, curColor.b);
-		world.Update(window, curColor.r, curColor.g, curColor.b);
 		
-		world.Draw_On();
+		glfwGetCursorPos(window, &mousex, &mousey);
+		
+		manager->update(mousex, mousey,curColor,pColor);
+		((WhiteColorPicker*)manager->get_whiteness_picker())->setWhite(pColor);
+		curColor = ((WhiteColorPicker*)manager->get_whiteness_picker())->getColor();
 
-		picker.Draw();
-		pColor = picker.getColor(window);
-		picker_white.setWhite(pColor);
-		curColor = picker_white.getColor(window);
-		picker_white.Draw();
+		tileShaderOn.Activate();
+		manager->draw();
 		
 		gridShader.Activate();
 		grid.Draw(gridShader);

@@ -30,8 +30,9 @@ float fb(float x) {
 }
 
 
-ColorPicker::ColorPicker(int screen_height, int screen_width, float rel_pos_x, float rel_pos_y, float rel_width, float rel_height, int num_col, int num_row, const char* vertexFile, const char* fragmentFile)
+ColorPicker::ColorPicker(GLFWwindow* window,int screen_height, int screen_width, float rel_pos_x, float rel_pos_y, float rel_width, float rel_height, int num_col, int num_row, const char* vertexFile, const char* fragmentFile)
 {
+	this->window = window;
 	curColor.r = 1;
 	curColor.g = 1;
 	curColor.b = 1;
@@ -61,6 +62,7 @@ ColorPicker::ColorPicker(int screen_height, int screen_width, float rel_pos_x, f
 			
 		}
 	}
+	setRainbow();
 }
 
 void ColorPicker::Draw()
@@ -87,31 +89,37 @@ void ColorPicker::setRainbow()
 	}
 }
 
-Color ColorPicker::getColor(GLFWwindow *window) {
-	double mouseX;
-	double mouseY;
-	glfwGetCursorPos(window, &mouseX, &mouseY); 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-		Color res(
-			world[lastx][lasty].getRed(),
-			world[lastx][lasty].getGreen(),
-			world[lastx][lasty].getBlue());
-		curColor = res;
-		return curColor;
+bool ColorPicker::isOn(int mousex, int mousey) {
+	mousey = screen_height - mousey;
+	if (mousex<(rel_pos_x + 1) * screen_width / 2 ||
+		mousex>((rel_pos_x + 1) / 2 + rel_width) * screen_width ||
+		mousey<(rel_pos_y + 1) * screen_height / 2 ||
+		mousey>((rel_pos_y + 1) / 2 + rel_height) * screen_height) {
+		return 0;
 	}
+	return 1;
+}
+
+
+
+Color ColorPicker::getColor()
+{
+	return curColor;
+}
+
+void ColorPicker::update(int mousex,int mousey,Color &color) {
+
+	double mouseX = mousex;
+	double mouseY = mousey;
+	//glfwGetCursorPos(window, &mouseX, &mouseY); 
 	mouseY = screen_height - mouseY; 
 	
-	if (mouseX<(rel_pos_x + 1) * screen_width / 2 ||
-		mouseX>((rel_pos_x + 1) / 2 + rel_width) * screen_width ||
-		mouseY<(rel_pos_y + 1) * screen_height / 2 ||
-		mouseY>((rel_pos_y + 1) / 2 + rel_height) * screen_height) {
-		Color res(
-			world[lastx][lasty].getRed(),
-			world[lastx][lasty].getGreen(),
-			world[lastx][lasty].getBlue());
-		curColor = res;
-		return curColor;
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+		
+		color = curColor;
+		return;
 	}
+	
 	
 	int posx = floor((float)(mouseX - ((rel_pos_x + 1) / 2) * screen_width) / (rel_width * screen_width) * (float)num_col);
 	int posy = floor((float)(mouseY - ((rel_pos_y + 1) / 2) * screen_height) / (rel_height * screen_height) * (float)num_row);
@@ -128,22 +136,6 @@ Color ColorPicker::getColor(GLFWwindow *window) {
 		world[posx][posy].getBlue());
 	curColor = res;
 	
-	return curColor;
+	color = curColor;
 }
 
-void ColorPicker::setWhite(Color col)
-{
-	float red = col.r; float green = col.g; float blue = col.b;
-	float lred = 1.0 - red;
-	float lgreen = 1.0 - green;
-	float lblue = 1.0 - blue;
-	lred /= (num_col-1);
-	lgreen /= (num_col-1);
-	lblue /= (num_col-1);
-	for (int i = 0; i < num_col; i++) {
-		world[i][0].setColor(red, green, blue);
-		red += lred;
-		green += lgreen;
-		blue += lblue;
-	}
-}

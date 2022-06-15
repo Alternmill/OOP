@@ -159,6 +159,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="stb.cpp" />
@@ -166,18 +167,23 @@
     <ClCompile Include="Tile_plain.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="WhiteColorPicker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="ColorPicker.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="InterfaceElement.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile_plain.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
+    <ClInclude Include="WhiteColorPicker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />

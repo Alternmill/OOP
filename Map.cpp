@@ -1,11 +1,8 @@
 #include "Map.h"
 
-Map::Map(int screen_height, int screen_width, float rel_pos_x, float rel_pos_y,float rel_width,float rel_height, int num_col, int num_row, Shader& shader_on, Shader& shader_off)
+Map::Map(GLFWwindow* window,int screen_height, int screen_width, float rel_pos_x, float rel_pos_y,float rel_width,float rel_height, int num_col, int num_row, Shader& shader_on, Shader& shader_off)
 {
-	//glUniform1i(glGetUniformLocation(shader_on.ID, "isOn"), 1);
-	//glUniform1i(glGetUniformLocation(shader_off.ID, "isOn"), 0);
-	on = shader_on;
-	off = shader_off;
+	this->window = window;
 	this->num_col = num_col;
 	this->num_row = num_row;
 	this->rel_height = rel_height;
@@ -31,7 +28,7 @@ Map::Map(int screen_height, int screen_width, float rel_pos_x, float rel_pos_y,f
 	right_was_pressed = 0;
 }
 
-void Map::Draw_On()
+void Map::Draw()
 {
 	//on.Activate();
 	for (int i = 0; i < num_col; i++) {
@@ -41,15 +38,24 @@ void Map::Draw_On()
 	}
 }
 
+bool Map::isOn(int mousex,int mousey) {
+	mousey = screen_height - mousey;
+	if (mousex<(rel_pos_x + 1) * screen_width / 2 ||
+		mousex>((rel_pos_x + 1) / 2 + rel_width) * screen_width ||
+		mousey<(rel_pos_y + 1) * screen_height / 2 ||
+		mousey>((rel_pos_y + 1) / 2 + rel_height) * screen_height) {
+		return 0;
+	}
+	return 1;
+}
 
-
-void Map::Update(GLFWwindow* window,float red,float green,float blue)
+void Map::update(int mousex,int mousey,Color &color)
 {
-	double mouseX;
-	double mouseY;
+	double mouseX = mousex;
+	double mouseY = mousey;
 	static int flag;
-
-	glfwGetCursorPos(window, &mouseX, &mouseY);
+	float red = color.r, green = color.g, blue = color.b;
+	//glfwGetCursorPos(window, &mouseX, &mouseY);
 	mouseY = screen_height - mouseY;
 
 	if (mouseX<(rel_pos_x + 1) * screen_width /2||
